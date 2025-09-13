@@ -1,0 +1,2 @@
+echo "out/" >> .gitignore
+echo "dist/" >> .gitignore
