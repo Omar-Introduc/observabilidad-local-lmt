@@ -18,3 +18,13 @@ CONFIG_PATH="./src/configurador.sh"
         echo "configurador.sh se ejecutó sin errores" >&3
     fi
 }
+
+@test "Makefile: 'make tools' finaliza con éxito..." {
+    run make tools
+    if [ $status -ne 0 ]; then
+        echo "Error: 'make tools' devolvió estado $status" >&2
+        false
+    else
+        echo "'make tools' se ejecutó sin errores" >&3
+    fi
+}
