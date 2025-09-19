@@ -73,10 +73,13 @@ teardown(){
     mkdir "$DIR_OUT_PATH"
     touch "$RES_OUT_PATH" "$LOG_PATH"
     run make clean
-    if [ $status -ne 0 ]; then
-        echo "Error: 'make clean' devolvió estado $status" >&2
+    
+    if [ -d $DIR_OUT_PATH ]; then
+        echo "Error: 'make clean' no elimino directorio de forma correcta" >&2
+        rm -rf out/*.log out/*.txt out/
         false
     else
-        echo "'make clean' se ejecutó sin errores" >&3
+        echo "'make clean' funciona correctamente" >&3
     fi
+    
 }
