@@ -47,3 +47,14 @@ teardown(){
         echo "Pipeline esta funcionando correctamente" >&3
     fi
 }
+
+@test "Makefile: 'make run' finaliza con éxito..." {
+    echo "ejemplo:ejemplo:admin" > "$ARCHIVO_PATH"
+    run make run
+    if [ $status -ne 0 ]; then
+        echo "Error: 'make run' devolvió estado $status" >&2
+        false
+    else
+        echo "'make run' se ejecutó sin errores" >&3
+    fi
+}
