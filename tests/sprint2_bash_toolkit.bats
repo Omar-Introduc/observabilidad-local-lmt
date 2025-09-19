@@ -40,7 +40,7 @@ teardown(){
     EXPECTED_OUT=$'\n``\nGilberto Leonardo\nWalter G.'
     #echo "$OUT" >&3
     #echo "$EXPECTED_OUT" >&3
-    if [ ! "$OUT" == "$EXPECTED_OUT" ]; then
+    if [[ ! "$OUT" == "$EXPECTED_OUT" ]]; then
         echo "Error: Pipeline da un resultado diferente al esperado " >&2
         false
     else
