@@ -32,17 +32,18 @@ teardown(){
     echo "herbert:Heriberto G.:user" > "$ARCHIVO_PATH"
     echo "gil:Gilberto Leonardo:admin" >> "$ARCHIVO_PATH"
     echo "walter:Walter G.:admin" >> "$ARCHIVO_PATH"
-    echo "ale:Alejandro G.:user" >> "$ARCHIVO_PATH"
-    echo "rob:Roberto Carlos:admin" >> "$ARCHIVO_PATH"
     echo "::admin" >> "$ARCHIVO_PATH"
+    echo ":\`\`:admin" >> "$ARCHIVO_PATH"
     run "$CONFIG_PATH"
     
-    cat "$RES_OUT_PATH" >&3
-    
-    if [ -f "$LOG_PATH" ]; then
-        echo "Error: configurador.sh no ejecutó clean al entrar en error (todavía existe) " >&2
+    OUT="$(cat "$RES_OUT_PATH")"
+    EXPECTED_OUT=$'\n``\nGilberto Leonardo\nWalter G.'
+    #echo "$OUT" >&3
+    #echo "$EXPECTED_OUT" >&3
+    if [ ! "$OUT" == "$EXPECTED_OUT" ]; then
+        echo "Error: Pipeline da un resultado diferente al esperado " >&2
         false
     else
-        echo "configurador.sh manejo el error correctamente" >&3
+        echo "Pipeline esta funcionando correctamente" >&3
     fi
 }
