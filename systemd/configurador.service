@@ -1,0 +1,13 @@
+[Unit]
+Description= Servicio para ejecutar el configurador automatico DevOps
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/configurador.sh
+User=root
+Group=root
+WorkingDirectory=/opt/proyecto-devops-grupo6
+
+[Install]
+WantedBy=multi-user.target

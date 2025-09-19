@@ -1,2 +1,2 @@
-echo "out/" >> .gitignore
-echo "dist/" >> .gitignore
+out/
+dist/
