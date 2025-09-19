@@ -30,7 +30,25 @@ teardown(){
     fi
 }
 
-@test "Script: 'configurador.sh' devuelve las respuestas esperadas" {
+@test "Script: 'configurador.sh' guarda variables por defecto adecuadamente" {
+    export TARGET_HOST=""
+    export TARGET_PORT=""
+    export ENVIRONMENT=""
+    run "$CONFIG_PATH"
+    
+    #echo "$output" >&3
+    #echo "TARGET_HOST: localhost"
+    #echo "TARGET_PORT: 8080"
+    #echo "ENVIRONMENT: development"
+    if [[ "${lines[1]}" != "TARGET_HOST: localhost" || "${lines[2]}" != "TARGET_PORT: 8080" || "${lines[3]}" != "ENVIRONMENT: development" ]]; then
+        echo "Error: Variables diferentes a las establecidas por defecto" >&2
+        false
+    else
+        echo "Se guardaron las variables por defecto correctamente" >&3
+    fi
+}
+
+@test "Script: 'configurador.sh' guarda las variables de entorno correctamente" {
     export TARGET_HOST=192.168.1.10
     export TARGET_PORT=443
     export ENVIRONMENT=production
@@ -41,10 +59,10 @@ teardown(){
     #echo "TARGET_PORT: $TARGET_PORT"
     #echo "ENVIRONMENT: $ENVIRONMENT"
     if [[ "${lines[1]}" != "TARGET_HOST: $TARGET_HOST" || "${lines[2]}" != "TARGET_PORT: $TARGET_PORT" || "${lines[3]}" != "ENVIRONMENT: $ENVIRONMENT" ]]; then
-        echo "Error: Se guardó un TARGET" >&2
+        echo "Error: Las variables de entorno no se guardaron correctamente" >&2
         false
     else
-        echo "Pipeline esta funcionando correctamente" >&3
+        echo "Variables de entorno se guardaron correctamente" >&3
     fi
 }
 

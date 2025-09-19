@@ -58,3 +58,25 @@ teardown(){
         echo "'make run' se ejecutó sin errores" >&3
     fi
 }
+
+@test "Makefile: 'make clean' finaliza con éxito..." {
+    run make clean
+    if [ $status -ne 0 ]; then
+        echo "Error: 'make clean' devolvió estado $status" >&2
+        false
+    else
+        echo "'make clean' se ejecutó sin errores" >&3
+    fi
+}
+
+@test "Makefile: 'make clean' funciona correctamente" {
+    mkdir "$DIR_OUT_PATH"
+    touch "$RES_OUT_PATH" "$LOG_PATH"
+    run make clean
+    if [ $status -ne 0 ]; then
+        echo "Error: 'make clean' devolvió estado $status" >&2
+        false
+    else
+        echo "'make clean' se ejecutó sin errores" >&3
+    fi
+}
