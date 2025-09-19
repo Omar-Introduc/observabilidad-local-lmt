@@ -1,6 +1,17 @@
 #!/usr/bin/env bats
 
 CONFIG_PATH="./src/configurador.sh"
+ARCHIVO_PATH="./config/archivo_de_usuarios.txt"
+
+setup(){
+    touch "$ARCHIVO_PATH"
+    echo "ejemplo:ejemplo:admin" > "$ARCHIVO_PATH"
+}
+
+teardown(){
+   rm -f "$ARCHIVO_PATH"
+}
+
 
 @test "Script: 'configurador.sh' es ejecutable..." {
     if [ ! -x "$CONFIG_PATH" ]; then
@@ -10,12 +21,48 @@ CONFIG_PATH="./src/configurador.sh"
         echo "configurador.sh tiene permiso de ejecución" >&3
     fi
     
-    run bash "$CONFIG_PATH"
+    run "$CONFIG_PATH"
     if [ $status -ne 0 ]; then
         echo "Error: configurador.sh devolvió estado $status" >&2
         false
     else
         echo "configurador.sh se ejecutó sin errores" >&3
+    fi
+}
+
+@test "Script: 'configurador.sh' guarda variables por defecto adecuadamente" {
+    export TARGET_HOST=""
+    export TARGET_PORT=""
+    export ENVIRONMENT=""
+    run "$CONFIG_PATH"
+    
+    #echo "$output" >&3
+    #echo "TARGET_HOST: localhost"
+    #echo "TARGET_PORT: 8080"
+    #echo "ENVIRONMENT: development"
+    if [[ "${lines[1]}" != "TARGET_HOST: localhost" || "${lines[2]}" != "TARGET_PORT: 8080" || "${lines[3]}" != "ENVIRONMENT: development" ]]; then
+        echo "Error: Variables diferentes a las establecidas por defecto" >&2
+        false
+    else
+        echo "Se guardaron las variables por defecto correctamente" >&3
+    fi
+}
+
+@test "Script: 'configurador.sh' guarda las variables de entorno correctamente" {
+    export TARGET_HOST=192.168.1.10
+    export TARGET_PORT=443
+    export ENVIRONMENT=production
+    run "$CONFIG_PATH"
+    
+    #echo "$output" >&3
+    #echo "TARGET_HOST: $TARGET_HOST"
+    #echo "TARGET_PORT: $TARGET_PORT"
+    #echo "ENVIRONMENT: $ENVIRONMENT"
+    if [[ "${lines[1]}" != "TARGET_HOST: $TARGET_HOST" || "${lines[2]}" != "TARGET_PORT: $TARGET_PORT" || "${lines[3]}" != "ENVIRONMENT: $ENVIRONMENT" ]]; then
+        echo "Error: Las variables de entorno no se guardaron correctamente" >&2
+        false
+    else
+        echo "Variables de entorno se guardaron correctamente" >&3
     fi
 }
 

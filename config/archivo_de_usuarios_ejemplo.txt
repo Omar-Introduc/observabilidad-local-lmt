@@ -1,0 +1,6 @@
+#ELIMINAR ESTA Y LA SIGUIENTE LINEA SI SE QUIERE USAR COMO ARCHIVO DE PRUEBA
+#RENOMBRAR A archivo_de_usuarios.txt
+juan:Juan Perez:user
+pedro:Pedro Garcia:user
+maria:Maria Lopez:admin
+ana:Ana Torres:admin
