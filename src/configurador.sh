@@ -24,7 +24,7 @@ verificar_dns() {
     echo ""
     echo "Vericando DNS para el dominio: '$dominio'..."
 
-    log_file= dig "$dominio"
+    dig "$dominio" >> "$log_file"
 
     local ip_resuelta
 
@@ -58,17 +58,17 @@ verificar_http() {
 }
 
 pipeline_de_unix() {
-    #local archivo="out/archivo_de_usuarios.txt"  
-    local archivo="config/archivo_de_usuarios_ejemplo.txt"
+
+    local archivo="$1"
 
     if [ ! -f "$archivo" ]; then
-        echo "El $archivo no existe."
+        echo "Error: El archivo '$archivo' no existe." >&2
         exit 1
     fi
 
     echo "Procesando el archivo de usuarios..."
     
-    cat "$archivo" | grep "admin" | awk -F ':' '{print $2}' | sort > "out/resultados_admins.txt" 
+    cat "$archivo" | grep "admin" | awk -F ':' '{print $2}' | LC_ALL=C sort > "out/resultados_admins.txt"
 
     echo "Proceso completado."
 
@@ -114,10 +114,7 @@ main() {
     local CHECK_URL="${CHECK_URL:-"https://www.google.com"}"
     local EXPECTED_STATUS="${EXPECTED_STATUS:-200}"
     
-    
-
-    local log_dir="out"
-    mkdir -p "$log_dir"
+    mkdir -p "out"
 
     echo ""
     echo "Configuración en proceso..."
@@ -126,8 +123,12 @@ main() {
     echo "ENVIRONMENT: $ENVIRONMENT"
     echo ""    
 
-    pipeline_de_unix
-    
+
+    local archivo_a_procesar="${1:-config/archivo_de_usuarios_ejemplo.txt}"
+    mkdir -p "$(dirname "$archivo_a_procesar")"
+    pipeline_de_unix "$archivo_a_procesar" 
+
+
     echo ""
     echo ""
     echo "Verificaciones de red..."

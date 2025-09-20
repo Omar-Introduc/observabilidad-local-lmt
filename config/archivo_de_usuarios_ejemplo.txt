@@ -1,3 +1,4 @@
 herbert:Heriberto G.:user
 gil:Gilberto Leonardo:admin
 walter:Walter G.:admin
+walter:Walter GJK.:admin

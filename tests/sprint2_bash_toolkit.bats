@@ -34,12 +34,13 @@ teardown(){
     echo "walter:Walter G.:admin" >> "$ARCHIVO_PATH"
     echo "::admin" >> "$ARCHIVO_PATH"
     echo ":\`\`:admin" >> "$ARCHIVO_PATH"
-    run "$CONFIG_PATH"
+    run "$CONFIG_PATH" "$ARCHIVO_PATH"
     
+
+
     OUT="$(cat "$RES_OUT_PATH")"
-    EXPECTED_OUT=$'\n``\nGilberto Leonardo\nWalter G.'
-    #echo "$OUT" >&3
-    #echo "$EXPECTED_OUT" >&3
+    EXPECTED_OUT=$'\nGilberto Leonardo\nWalter G.\n``'
+
     if [[ ! "$OUT" == "$EXPECTED_OUT" ]]; then
         echo "Error: Pipeline da un resultado diferente al esperado " >&2
         false
