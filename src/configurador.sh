@@ -17,6 +17,146 @@ cleanup() {
     echo "Archivos temporales eliminados."
 }
 
+crear_usuario() {
+    if [ $# -ne 3 ]; then
+        echo "Error: Se necesitan tres argumentos (nombre_usuario, uid, gid)."
+        return 1
+    fi
+
+    local nombre_usuario="$1"
+    local uid="$2"
+    local gid="$3"
+    local usuarios_dir="out/usuarios"
+
+    mkdir -p "$usuarios_dir"
+
+    if [ -f "$usuarios_dir/$nombre_usuario" ]; then
+        echo "El usuario $nombre_usuario ya existe."
+        return 1
+    fi
+
+    echo "Creando el usuario: $nombre_usuario"
+    echo "UID: $uid, GID: $gid" > "$usuarios_dir/$nombre_usuario"
+    echo "Usuario $nombre_usuario creado con UID $uid y GID $gid."
+}
+
+eliminar_usuario() {
+    if [ $# -ne 1 ]; then
+        echo "Error: Se necesita un argumento (nombre_usuario)."
+        return 1
+    fi
+
+    local nombre_usuario="$1"
+    local usuarios_dir="out/usuarios"
+
+    if [ ! -f "$usuarios_dir/$nombre_usuario" ]; then
+        echo "El usuario $nombre_usuario no existe."
+        return 1
+    fi
+
+    echo "Eliminando el usuario: $nombre_usuario"
+    rm -f "$usuarios_dir/$nombre_usuario"
+    echo "Usuario $nombre_usuario eliminado."
+}
+
+crear_grupo() {
+    if [ $# -ne 1 ]; then
+        echo "Error: Se necesita un argumento (nombre_grupo)."
+        return 1
+    fi
+
+    local nombre_grupo="$1"
+    local grupos_dir="out/grupos"
+
+    mkdir -p "$grupos_dir"
+
+    if [ -f "$grupos_dir/$nombre_grupo" ]; then
+        echo "El grupo '$nombre_grupo' ya existe."
+        return 1
+    fi
+
+    echo "Creando el grupo: $nombre_grupo"
+    echo "Miembros:" > "$grupos_dir/$nombre_grupo"
+    echo "Grupo '$nombre_grupo' creado."
+}
+
+eliminar_grupo() {
+    if [ $# -ne 1 ]; then
+        echo "Error: Se necesita un argumento (nombre_grupo)."
+        return 1
+    fi
+
+    local nombre_grupo="$1"
+    local grupos_dir="out/grupos"
+
+    if [ ! -f "$grupos_dir/$nombre_grupo" ]; then
+        echo "El grupo $nombre_grupo no existe."
+        return 1
+    fi
+
+    echo "Eliminando el grupo: $nombre_grupo"
+    rm -f "$grupos_dir/$nombre_grupo"
+    echo "Grupo $nombre_grupo eliminado."
+}
+
+asignar_usuario_a_grupo() {
+    if [ $# -ne 2 ]; then
+        echo "Error: Se necesitan dos argumentos (nombre_usuario, nombre_grupo)."
+        return 1
+    fi
+
+    local nombre_usuario="$1"
+    local nombre_grupo="$2"
+    local usuarios_dir="out/usuarios"
+    local grupos_dir="out/grupos"
+
+    if [ ! -f "$usuarios_dir/$nombre_usuario" ]; then
+        echo "El usuario '$nombre_usuario' no existe."
+        return 1
+    fi
+
+    if [ ! -f "$grupos_dir/$nombre_grupo" ]; then
+        echo "El grupo '$nombre_grupo' no existe."
+        return 1
+    fi
+
+    if grep -q "$nombre_usuario" "$grupos_dir/$nombre_grupo"; then
+        echo "El usuario '$nombre_usuario' ya está asignado al grupo '$nombre_grupo'."
+    else
+        echo "$nombre_usuario" >> "$grupos_dir/$nombre_grupo"
+        echo "Usuario '$nombre_usuario' asignado al grupo '$nombre_grupo'."
+    fi
+}
+
+desasignar_usuario_de_grupo() {
+    if [ $# -ne 2 ]; then
+        echo "Error: Se necesitan dos argumentos (nombre_usuario, nombre_grupo)."
+        return 1
+    fi
+
+    local nombre_usuario="$1"
+    local nombre_grupo="$2"
+    local usuarios_dir="out/usuarios"
+    local grupos_dir="out/grupos"
+
+    if [ ! -f "$usuarios_dir/$nombre_usuario" ]; then
+        echo "El usuario $nombre_usuario no existe."
+        return 1
+    fi
+
+    if [ ! -f "$grupos_dir/$nombre_grupo" ]; then
+        echo "El grupo $nombre_grupo no existe."
+        return 1
+    fi
+
+    if ! grep -q "$nombre_usuario" "$grupos_dir/$nombre_grupo"; then
+        echo "El usuario $nombre_usuario no está asignado al grupo $nombre_grupo."
+    else
+        sed -i "/^$nombre_usuario$/d" "$grupos_dir/$nombre_grupo"
+        echo "Usuario $nombre_usuario desasignado del grupo $nombre_grupo."
+    fi
+}
+
 verificar_dns() {
     local dominio="$1"
     local log_file="out/dns_check.log"
@@ -102,6 +242,55 @@ verificar_certificado_tls() {
 
 }
 
+procesar_configuracion() {
+    local archivo_config="$1"
+
+    if [ ! -f "$archivo_config" ]; then
+        echo "Error: El archivo de configuración '$archivo_config' no existe." >&2
+        mkdir -p "$(dirname "$archivo_config")"
+        cat > "$archivo_config" << EOF
+crear_usuario usuario1 1041 1231
+crear_usuario usuario2 543 522
+crear_grupo administradores
+crear_grupo usuarios
+asignar_usuario_a_grupo usuario1 administradores
+asignar_usuario_a_grupo usuario2 usuarios
+EOF
+        echo "Archivo de configuración de ejemplo creado: $archivo_config"
+    fi
+    
+    while IFS= read -r linea; do
+
+        [[ -z "$linea" || "$linea" =~ ^# ]] && continue
+        
+        if [[ "$linea" =~ ^crear_usuario ]]; then
+            usuario=$(echo "$linea" | cut -d ' ' -f2)
+            uid=$(echo "$linea" | cut -d ' ' -f3)
+            gid=$(echo "$linea" | cut -d ' ' -f4)
+            crear_usuario "$usuario" "$uid" "$gid" || true
+        elif [[ "$linea" =~ ^eliminar_usuario ]]; then
+            usuario=$(echo "$linea" | cut -d ' ' -f2)
+            eliminar_usuario "$usuario" || true
+        elif [[ "$linea" =~ ^crear_grupo ]]; then
+            grupo=$(echo "$linea" | cut -d ' ' -f2)
+            crear_grupo "$grupo" || true
+        elif [[ "$linea" =~ ^eliminar_grupo ]]; then
+            grupo=$(echo "$linea" | cut -d ' ' -f2)
+            eliminar_grupo "$grupo" || true
+        elif [[ "$linea" =~ ^asignar_usuario_a_grupo ]]; then
+            usuario=$(echo "$linea" | cut -d ' ' -f2)
+            grupo=$(echo "$linea" | cut -d ' ' -f3)
+            asignar_usuario_a_grupo "$usuario" "$grupo" || true
+        elif [[ "$linea" =~ ^desasignar_usuario_de_grupo ]]; then
+            usuario=$(echo "$linea" | cut -d ' ' -f2)
+            grupo=$(echo "$linea" | cut -d ' ' -f3)
+            desasignar_usuario_de_grupo "$usuario" "$grupo" || true
+        else
+            echo "Advertencia: Comando no reconocido: $linea" >&2
+        fi
+    done < "$archivo_config"
+}
+
 main() {
 
     trap 'cleanup' EXIT  
@@ -135,5 +324,11 @@ main() {
     verificar_dns "$CHECK_DOMAIN"
     verificar_http "$CHECK_URL" "$EXPECTED_STATUS"
     verificar_certificado_tls "$CHECK_DOMAIN"
+
+    echo ""
+    echo "Procesando configuración de usuarios y grupos..."
+    local archivo_config="${2:-config/configuracion_usuarios_grupos.txt}"
+    procesar_configuracion "$archivo_config"
+
 }
 main "$@"
