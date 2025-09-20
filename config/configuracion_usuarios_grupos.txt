@@ -1,0 +1,26 @@
+crear_usuario juanperez 214 132
+crear_usuario mariafernanda 23 45
+crear_usuario carlosgomez 134 455
+crear_usuario sofiasanchez 345 234
+crear_usuario andresmartin 555 555
+crear_usuario luisalvarez 33 45
+crear_usuario paularojas 34 56
+crear_usuario robertohernandez 1028 2008
+crear_usuario juanmartinez 346 276
+crear_usuario aliciagonzalez 890 678
+
+crear_grupo administradores
+crear_grupo ventas
+crear_grupo marketing
+crear_grupo soporte
+crear_grupo desarrollo
+
+asignar_usuario_a_grupo juanperez administradores
+asignar_usuario_a_grupo mariafernanda ventas
+asignar_usuario_a_grupo carlosgomez marketing
+asignar_usuario_a_grupo sofiasanchez soporte
+asignar_usuario_a_grupo andresmartin desarrollo
+
+eliminar_usuario mariafernanda
+eliminar_grupo ventas
+desasignar_usuario_de_grupo carlosgomez marketing
