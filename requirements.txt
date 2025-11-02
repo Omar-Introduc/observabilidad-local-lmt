@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+jsonschema
+pytest
+httpx
+flake8
+black
+pytest-cov
+pytest-asyncio
+pytest-mock
