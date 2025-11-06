@@ -13,3 +13,18 @@ Para estar seguros de que solo aceptamos datos buenos, creamos un sistema de reg
   * **Hicimos que las Pruebas Funcionen:** Las pruebas no podían encontrar el código `src`. Para arreglarlo, creamos el archivo `pytest.ini`.
  ![alt text](imagenes/image.png)
 
+
+### Cómo vamos a Automatizar y Estandarizar Utiilizando Makefile y venv
+Vamos a generar makefile para definir "recetas" o comandos simples para las tareas más comunes.
+    * `make setup`: Prepara el entorno virtual e instala *todas* las dependencias.
+    * `make lint`: Ejecutara `flake8` para revisar la calidad del código.
+    * `make test`: Lanzara las pruebas con `pytest` y genera un reporte de coverage(Para fase inicial esta bien con u porcenaje bajo).
+
+    1.  **requirements.txt:** librerías necesarias para que la aplicación funcione en producción
+    2.  **requirements-dev.txt:** herramientas para desarrollar, probar y formatear el código
+
+* **Estandarizamos las herramientas de IaC (Terraform):** El `Makefile` también soluciona el problema de "en mi máquina funciona".
+    1.  **Instalación Local:** El target `install-iac-tools` descarga versiones *específicas* de `tflint` (linter) y `tfsec` (seguridad) ** El target `validate-iac` usa esas herramientas locales de Terraform por el momento no esta implementado
+![alt text](imagenes/image.png)
+
+* Se encontraron errores estructurales en base a `lint` fueron solucionados mediante comando `black src tests` en consola

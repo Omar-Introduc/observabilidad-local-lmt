@@ -17,9 +17,9 @@ def test_log_event_creation():
         id=log_id,
         timestamp=timestamp,
         service="test_service",
-        level="INFO",  
+        level="INFO",
         message="This is a test log message",
-        details={"key": "value"}
+        details={"key": "value"},
     )
     assert log.id == log_id
     assert log.level == "INFO"
@@ -33,9 +33,9 @@ def test_metric_event_creation():
         id=metric_id,
         timestamp=timestamp,
         service="test_service",
-        name="test.metric",  
-        value=1.23,        
-        tags={"tag1": "value1"}
+        name="test.metric",
+        value=1.23,
+        tags={"tag1": "value1"},
     )
     assert metric.id == metric_id
     assert metric.name == "test.metric"
@@ -53,13 +53,12 @@ def test_trace_event_creation():
         trace_id=trace_id,
         span_id=span_id,
         name="test_trace",
-        duration=0.123,     #
-        tags={"tag1": "value1"}
+        duration=0.123,  #
+        tags={"tag1": "value1"},
     )
     assert trace.trace_id == trace_id
     assert trace.name == "test_trace"
     assert trace.duration == 0.123
-
 
 
 def test_log_event_failures():
@@ -67,20 +66,29 @@ def test_log_event_failures():
 
     with pytest.raises(ValidationError):
         LogEvent(
-            id=uuid4(), timestamp=datetime.now(), service="test",
-            level="INVALID_LEVEL", message="Test"
+            id=uuid4(),
+            timestamp=datetime.now(),
+            service="test",
+            level="INVALID_LEVEL",
+            message="Test",
         )
 
     with pytest.raises(ValidationError):
         LogEvent(
-            id=uuid4(), timestamp=datetime.now(), service="",
-            level="INFO", message="Test"
+            id=uuid4(),
+            timestamp=datetime.now(),
+            service="",
+            level="INFO",
+            message="Test",
         )
 
     with pytest.raises(ValidationError):
         LogEvent(
-            id=uuid4(), timestamp=datetime.now(), service="test",
-            level="INFO", message=""
+            id=uuid4(),
+            timestamp=datetime.now(),
+            service="test",
+            level="INFO",
+            message="",
         )
 
 
@@ -89,20 +97,32 @@ def test_metric_event_failures():
 
     with pytest.raises(ValidationError):
         MetricEvent(
-            id=uuid4(), timestamp=datetime.now(), service="test",
-            name="test.metric", value=-1.0, tags={}
+            id=uuid4(),
+            timestamp=datetime.now(),
+            service="test",
+            name="test.metric",
+            value=-1.0,
+            tags={},
         )
 
     with pytest.raises(ValidationError):
         MetricEvent(
-            id=uuid4(), timestamp=datetime.now(), service="test",
-            name="invalid-metric-name!", value=1.0, tags={}
+            id=uuid4(),
+            timestamp=datetime.now(),
+            service="test",
+            name="invalid-metric-name!",
+            value=1.0,
+            tags={},
         )
 
     with pytest.raises(ValidationError):
         MetricEvent(
-            id=uuid4(), timestamp=datetime.now(), service="test",
-            name=".test.metric", value=1.0, tags={}
+            id=uuid4(),
+            timestamp=datetime.now(),
+            service="test",
+            name=".test.metric",
+            value=1.0,
+            tags={},
         )
 
 
@@ -111,14 +131,24 @@ def test_trace_event_failures():
 
     with pytest.raises(ValidationError):
         TraceEvent(
-            id=uuid4(), timestamp=datetime.now(), service="test",
-            trace_id=uuid4(), span_id=uuid4(), name="test",
-            duration=-1.0, tags={}
+            id=uuid4(),
+            timestamp=datetime.now(),
+            service="test",
+            trace_id=uuid4(),
+            span_id=uuid4(),
+            name="test",
+            duration=-1.0,
+            tags={},
         )
 
     with pytest.raises(ValidationError):
         TraceEvent(
-            id=uuid4(), timestamp=datetime.now(), service="test",
-            trace_id=uuid4(), span_id=uuid4(), name="",
-            duration=1.0, tags={}
+            id=uuid4(),
+            timestamp=datetime.now(),
+            service="test",
+            trace_id=uuid4(),
+            span_id=uuid4(),
+            name="",
+            duration=1.0,
+            tags={},
         )
