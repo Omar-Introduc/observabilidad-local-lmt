@@ -22,8 +22,4 @@ def ingest_log(event: LogEvent):
     """
     Recibe un LogEvent, valida automáticamente el esquema y responde 200 OK.
     """
-    try:
-        # Pydantic ya validó el JSON automáticamente al parsear
-        return {"status": "ok"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    return {"status": "ok"}
