@@ -28,3 +28,6 @@ Vamos a generar makefile para definir "recetas" o comandos simples para las tare
 ![alt text](imagenes/image.png)
 
 * Se encontraron errores estructurales en base a `lint` fueron solucionados mediante comando `black src tests` en consola
+### Implementacion de Dockerfile para collector 
+
+* Se asignos una composicion de dockerfile para collecto a continuacion se va poder continuar con la implementacion de terraform para esta variante y asu vez se continuaran con la creacion de dockerfile para los demas servicios
