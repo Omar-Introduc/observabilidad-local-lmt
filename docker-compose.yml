@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  collector:
+    build:
+      context: .
+      dockerfile: src/collector/dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
