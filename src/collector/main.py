@@ -1,7 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from src.contracts.events import LogEvent
 
 app = FastAPI()
+
 
 @app.get("/")
 def home():
@@ -10,12 +11,14 @@ def home():
     """
     return {"message": "Usted esta en el Collector"}
 
+
 @app.get("/health")
 def health_check():
     """
     Si app esta viva, devuelve ok
     """
     return {"status": "ok"}
+
 
 @app.post("/ingest/log")
 def ingest_log(event: LogEvent):
