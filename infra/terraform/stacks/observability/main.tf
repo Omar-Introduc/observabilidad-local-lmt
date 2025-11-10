@@ -12,5 +12,5 @@ provider "docker" {
 }
 
 module "collector"{
-    source = "../modules/collector"
+    source = "../../modules/collector"
 }
