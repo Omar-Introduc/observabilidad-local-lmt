@@ -31,3 +31,18 @@ Vamos a generar makefile para definir "recetas" o comandos simples para las tare
 ### Implementacion de Dockerfile para collector 
 
 * Se asignos una composicion de dockerfile para collecto a continuacion se va poder continuar con la implementacion de terraform para esta variante y asu vez se continuaran con la creacion de dockerfile para los demas servicios
+
+## Ampliacion de makefile y CI-CD
+La ampliación de la automatización se centró en **centralizar los comandos** y **gates de calidad en CI/CD**.
+
+* **Makefile Ampliado:** Se añadieron comandos de ciclo de vida completo (`setup`, `build`, `pack`, `clean`) y comandos de gestión de la infraestructura como código (IaC) de Terraform: `plan`, `apply`, `destroy` y `validate-iac`.
+
+* **Pipeline CI/CD (GitHub Actions) Reforzado:** El flujo se dividió en tres *jobs* con dependencias:
+    1.  **`quality`:** Ejecuta `make lint` y `black --check` (formato).
+    2.  **`test`:** Ejecuta `make test` para verificar las pruebas unitarias y el **coverage** ($\ge 85\%$).
+    3.  **`validate-iac`:** Incluye el paso de **instalar Terraform** (usando `hashicorp/setup-terraform`) para luego ejecutar `make validate-iac`, asegurando la validación del código de infraestructura (`terraform validate`, `tflint`, `tfsec`) en cada *push*.
+
+* A su vez una verificacion localmente con act
+![alt text](imagenes/image-docker-act.png)
+
+![alt text](imagenes/ejecucion-act.png)
