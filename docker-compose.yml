@@ -8,3 +8,15 @@ services:
       - "8000:8000"
     volumes:
       - ./src:/app/src
+  store:
+    build:
+      context: .
+      dockerfile: src/store/dockerfile
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./src:/app/src
+      - store_data:/app/data
+
+volumes:
+  store_data:
