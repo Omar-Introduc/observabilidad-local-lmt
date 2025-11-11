@@ -16,3 +16,8 @@ module "collector"{
     source = "../../modules/collector"
     providers = { docker = docker }
 }
+
+module "store"{
+    source = "../../modules/store"
+    providers = { docker = docker }
+}
