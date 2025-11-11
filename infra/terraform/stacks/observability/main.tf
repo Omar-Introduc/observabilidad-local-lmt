@@ -1,0 +1,18 @@
+terraform {
+  required_version = ">= 1.5.0" 
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "3.0.1"
+    }
+  }
+}
+
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
+}
+
+module "collector"{
+    source = "../../modules/collector"
+    providers = { docker = docker }
+}

@@ -1,0 +1,9 @@
+pytest
+pytest-cov
+pytest-asyncio
+pytest-mock
+flake8
+black
+pre-commit
+httpx
+build
