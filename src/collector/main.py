@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from src.contracts.events import LogEvent
+import os
+import logging
+import httpx
 
 app = FastAPI()
 
@@ -23,6 +26,30 @@ def health_check():
 @app.post("/ingest/log")
 def ingest_log(event: LogEvent):
     """
-    Recibe un LogEvent, valida automáticamente el esquema y responde 200 OK.
+    Recibe un LogEvent, valida automáticamente el esquema usando Pydantic
+    y lo reenvía al Store Service en /save/log. Si el envío falla, devuelve
+    igualmente 200 con status ok (no queremos que la validación del esquema
+    dependa de la disponibilidad del store).
+    
+    La URL del store puede configurarse con la variable de entorno STORE_URL
+    (por ejemplo: http://store:8000). Por defecto se usa http://store:8000.
     """
+    store_base = os.getenv("STORE_URL", "http://store:8000")
+    store_endpoint = f"{store_base.rstrip('/')}/save/log"
+
+    logger = logging.getLogger("collector")
+    try:
+        with httpx.Client(timeout=2.0) as client:
+            resp = client.post(store_endpoint, json=event.dict())
+            resp.raise_for_status()
+            return {"status": "ok", "store_response": resp.json()}
+    except httpx.RequestError as e:
+        logger.warning("No se pudo conectar al Store (%s): %s", store_endpoint, e)
+    except httpx.HTTPStatusError as e:
+        logger.warning(
+            "El Store respondió con error %s: %s", e.response.status_code, e.response.text
+        )
+    except Exception as e:
+        logger.exception("Error inesperado al reenviar log al store: %s", e)
+
     return {"status": "ok"}
