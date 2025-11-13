@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from src.contracts.events import LogEvent
 import os
 import logging
@@ -30,7 +30,7 @@ def ingest_log(event: LogEvent):
     y lo reenvía al Store Service en /save/log. Si el envío falla, devuelve
     igualmente 200 con status ok (no queremos que la validación del esquema
     dependa de la disponibilidad del store).
-    
+
     La URL del store puede configurarse con la variable de entorno STORE_URL
     (por ejemplo: http://store:8000). Por defecto se usa http://store:8000.
     """
