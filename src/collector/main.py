@@ -47,7 +47,9 @@ def ingest_log(event: LogEvent):
         logger.warning("No se pudo conectar al Store (%s): %s", store_endpoint, e)
     except httpx.HTTPStatusError as e:
         logger.warning(
-            "El Store respondió con error %s: %s", e.response.status_code, e.response.text
+            "El Store respondió con error %s: %s",
+            e.response.status_code,
+            e.response.text,
         )
     except Exception as e:
         logger.exception("Error inesperado al reenviar log al store: %s", e)
