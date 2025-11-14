@@ -4,6 +4,8 @@ from uuid import uuid4
 from datetime import datetime as Datetime
 import pytest
 import datetime
+from unittest.mock import patch, MagicMock
+from uuid import uuid4
 
 client = TestClient(app)
 
@@ -104,3 +106,68 @@ def test_valid_log_returns_200(payload):
 def test_invalid_log_returns_422(payload):
     response = client.post("/ingest/log", json=payload)
     assert response.status_code == 422
+
+client = TestClient(app)
+
+
+def valid_log_payload():
+    return {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "demo",
+        "level": "INFO",
+        "message": "Test log",
+        "details": {"foo": "bar"},
+    }
+
+
+@patch("src.collector.main.httpx.Client")
+def test_ingest_log_success(mock_client_cls):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {"saved": True}
+    mock_response.raise_for_status.return_value = None
+    mock_client.post.return_value = mock_response
+
+    payload = valid_log_payload()
+
+    res = client.post("/ingest/log", json=payload)
+
+    assert res.status_code == 200
+    assert res.json()["status"] == "ok"
+    assert res.json()["store_response"] == {"saved": True}
+
+    mock_client.post.assert_called_once()
+
+@patch("src.collector.main.httpx.Client")
+def test_ingest_log_store_down(mock_client_cls):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_client.post.side_effect = Exception("boom")
+
+    payload = valid_log_payload()
+    res = client.post("/ingest/log", json=payload)
+
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
+
+@pytest.mark.parametrize("exc", [
+    Exception("network down"),
+    ValueError("bad value"),
+    RuntimeError("unexpected"),
+])
+@patch("src.collector.main.httpx.Client")
+def test_ingest_log_parametrized_errors(mock_client_cls, exc):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_client.post.side_effect = exc
+
+    payload = valid_log_payload()
+    res = client.post("/ingest/log", json=payload)
+
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
