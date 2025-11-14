@@ -1,10 +1,19 @@
 from fastapi import FastAPI, HTTPException
 import sqlite3
 from pathlib import Path
+import json
 
 app = FastAPI()
 
 DB_PATH = Path("/app/data/logs.db")
+
+
+@app.get("/health")
+def health_check():
+    """
+    Si app esta viva, devuelve ok
+    """
+    return {"status": "ok"}
 
 
 @app.get("/")
@@ -32,6 +41,9 @@ def read_logs():
 
         logs = []
         for log_info in raw_logs:
+
+            details_as_dict = json.loads(log_info[5]) if log_info[5] else None
+
             logs.append(
                 {
                     "id": log_info[0],
@@ -39,7 +51,7 @@ def read_logs():
                     "service": log_info[2],
                     "level": log_info[3],
                     "message": log_info[4],
-                    "details": log_info[5],
+                    "details": details_as_dict,
                 }
             )
         return logs
