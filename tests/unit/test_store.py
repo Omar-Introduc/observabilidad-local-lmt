@@ -154,7 +154,7 @@ def test_init_db(mocker):
 
     mock_connect.assert_called_with(DATABASE_PATH)
     mock_conn.cursor.assert_called_once()
-    assert mock_cursor.execute.call_count == 2
+    assert mock_cursor.execute.call_count == 3
     mock_conn.commit.assert_called_once()
     mock_conn.close.assert_called_once()
 
