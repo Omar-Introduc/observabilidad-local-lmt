@@ -24,3 +24,10 @@ docker ps
 2. Verificar el estado del Collector (Acceder al endpoint /health) y Enviar un log al Collector (Verificar que el log sea recibido y enviado al Store)
 
 ![alt text](imagenes/imagen-log.png)
+
+## Verificacion e2e
+* Verificamos efectivamente el diccionario Json una vez enviado un curl de prueba 
+![alt text](imagenes/e2e-viewer.png)
+
+* Para envio invalido se reenviara una estrucutura correcta de msg gracias a pydantic de formato 
+![alt text](imagenes/error-pydantic.png)

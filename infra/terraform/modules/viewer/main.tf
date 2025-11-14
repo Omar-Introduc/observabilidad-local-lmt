@@ -15,7 +15,7 @@ resource "docker_container" "viewer" {
   image   = docker_image.viewer.image_id
   restart = "unless-stopped"
   ports {
-    internal = 8002
+    internal = 8000
     external = 8082
   }
   volumes {
