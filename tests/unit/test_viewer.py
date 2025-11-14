@@ -37,3 +37,9 @@ def test_get_logs_edge_cases(fake_logs):
     with patch("src.viewer.main.read_logs", autospec=True, return_value=fake_logs):
         response = client.get("/logs")
         assert response.status_code == 200
+
+
+def test_health_check():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}

@@ -1,0 +1,22 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks-detect
+        name: Gitleaks
+        description: Detect hardcoded secrets
+        entry: gitleaks detect --source . --verbose
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        name: Black
+        description: "Black: The uncompromising Python code formatter"
+        entry: black .
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.1.0
+    hooks:
+      - id: flake8
+        name: Flake8
+        description: "Flake8: Your tool for style guide enforcement"
+        entry: flake8 .
