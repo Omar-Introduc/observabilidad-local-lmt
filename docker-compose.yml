@@ -17,6 +17,14 @@ services:
     volumes:
       - ./src:/app/src
       - store_data:/app/data
-
+  viewer:
+    build:
+      context: .
+      dockerfile: src/viewer/dockerfile
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./src:/app/src
+      - store_data:/app/data
 volumes:
   store_data:
