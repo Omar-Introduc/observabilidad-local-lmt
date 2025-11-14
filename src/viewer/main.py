@@ -50,5 +50,6 @@ def read_logs():
 
 @app.get("/logs")
 def get_logs():
-    logs = read_logs()
+    logs = read_logs() or []
+    logs = list(logs)
     return {"count": len(logs), "logs": logs}
