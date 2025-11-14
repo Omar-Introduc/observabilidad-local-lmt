@@ -38,9 +38,10 @@ def ingest_log(event: LogEvent):
     store_endpoint = f"{store_base.rstrip('/')}/save/log"
 
     logger = logging.getLogger("collector")
+    payload=event.model_dump(mode="json")
     try:
         with httpx.Client(timeout=2.0) as client:
-            resp = client.post(store_endpoint, json=event.dict())
+            resp = client.post(store_endpoint, json=payload)
             resp.raise_for_status()
             return {"status": "ok", "store_response": resp.json()}
     except httpx.RequestError as e:
