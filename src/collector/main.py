@@ -80,6 +80,7 @@ def ingest_log(event: LogEvent):
 
     return {"status": "ok"}
 
+
 @app.post("/ingest/trace")
 def ingest_log(event: TraceEvent):
     """

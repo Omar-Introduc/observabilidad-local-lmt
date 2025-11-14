@@ -2,7 +2,7 @@ import sqlite3
 import json
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
-from src.contracts.events import LogEvent, MetricEvent,TraceEvent
+from src.contracts.events import LogEvent, MetricEvent, TraceEvent
 
 DATABASE_PATH = "/app/data/logs.db"
 
@@ -114,6 +114,7 @@ async def save_metric(metric_event: MetricEvent):
     except Exception as e:
         print("ERROR AL GUARDAR METRICA:", repr(e))
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/save/trace")
 async def save_trace(trace_event: TraceEvent):
