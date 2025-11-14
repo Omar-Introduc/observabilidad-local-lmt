@@ -34,6 +34,21 @@ def init_db():
         )
     """
     )
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS traces (
+            id TEXT PRIMARY KEY,
+            timestamp TEXT NOT NULL,
+            service TEXT NOT NULL,
+            trace_id TEXT NOT NULL,
+            span_id TEXT NOT NULL,
+            parent_span_id TEXT,
+            name TEXT NOT NULL,
+            duration REAL NOT NULL,
+            tags TEXT
+        )
+    """
+    )
     conn.commit()
     conn.close()
 
