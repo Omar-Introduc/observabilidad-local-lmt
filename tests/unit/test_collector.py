@@ -107,6 +107,18 @@ def test_invalid_log_returns_422(payload):
     assert response.status_code == 422
 
 
+def test_home_returns_200():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Usted esta en el Collector"}
+
+
+def test_health_check_returns_200():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
 client = TestClient(app)
 
 
@@ -154,6 +166,92 @@ def test_ingest_log_store_down(mock_client_cls):
 
     assert res.status_code == 200
     assert res.json() == {"status": "ok"}
+
+
+METRICAS_INVALIDAS = [
+    {},
+    {
+        "id": str(uuid4()),
+        "timestamp": "2025/11/09",
+        "service": "api",
+        "name": "metric.a",
+        "value": 1.2,
+        "tags": {"env": "test"},
+    },
+    {
+        "id": "12345678",
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "api",
+        "name": "metric.b",
+        "value": 3.4,
+        "tags": {"env": "test"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "",
+        "name": "metric.c",
+        "value": 5.6,
+        "tags": {"env": "test"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "api",
+        "name": ".metric.d",
+        "value": 7.8,
+        "tags": {"env": "test"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "api",
+        "name": "metric.e.",
+        "value": 9.0,
+        "tags": {"env": "test"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "api",
+        "name": "metric.f",
+        "value": -1.0,
+        "tags": {"env": "test"},
+    },
+]
+
+
+METRICAS_VALIDAS = [
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "api",
+        "name": "metric.g",
+        "value": 1.23,
+        "tags": {"env": "test"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "api",
+        "name": "metric.h",
+        "value": 4.56,
+        "tags": {},
+    },
+]
+
+
+@pytest.mark.parametrize("payload", METRICAS_VALIDAS)
+def test_valid_metric_returns_200(payload):
+    response = client.post("/ingest/metric", json=payload)
+    assert response.status_code == 200
+    assert response.json()["status"] == "ok"
+
+
+@pytest.mark.parametrize("payload", METRICAS_INVALIDAS)
+def test_invalid_metric_returns_422(payload):
+    response = client.post("/ingest/metric", json=payload)
+    assert response.status_code == 422
 
 
 @pytest.mark.parametrize(
