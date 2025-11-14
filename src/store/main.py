@@ -58,4 +58,5 @@ async def save_log(log_event: LogEvent):
         conn.close()
         return {"message": "Log event saved successfully"}
     except Exception as e:
+        print("ERROR AL GUARDAR LOG:", repr(e))
         raise HTTPException(status_code=500, detail=str(e))
