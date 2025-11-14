@@ -5,7 +5,6 @@ from datetime import datetime as Datetime
 import pytest
 import datetime
 from unittest.mock import patch, MagicMock
-from uuid import uuid4
 
 client = TestClient(app)
 
@@ -107,6 +106,7 @@ def test_invalid_log_returns_422(payload):
     response = client.post("/ingest/log", json=payload)
     assert response.status_code == 422
 
+
 client = TestClient(app)
 
 
@@ -141,6 +141,7 @@ def test_ingest_log_success(mock_client_cls):
 
     mock_client.post.assert_called_once()
 
+
 @patch("src.collector.main.httpx.Client")
 def test_ingest_log_store_down(mock_client_cls):
     mock_client = MagicMock()
@@ -154,11 +155,15 @@ def test_ingest_log_store_down(mock_client_cls):
     assert res.status_code == 200
     assert res.json() == {"status": "ok"}
 
-@pytest.mark.parametrize("exc", [
-    Exception("network down"),
-    ValueError("bad value"),
-    RuntimeError("unexpected"),
-])
+
+@pytest.mark.parametrize(
+    "exc",
+    [
+        Exception("network down"),
+        ValueError("bad value"),
+        RuntimeError("unexpected"),
+    ],
+)
 @patch("src.collector.main.httpx.Client")
 def test_ingest_log_parametrized_errors(mock_client_cls, exc):
     mock_client = MagicMock()
