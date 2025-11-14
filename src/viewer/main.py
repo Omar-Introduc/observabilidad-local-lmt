@@ -4,7 +4,7 @@ from pathlib import Path
 
 app = FastAPI()
 
-DB_PATH = Path("/data/logs.db")
+DB_PATH = Path("/app/data/logs.db")
 
 @app.get("/")
 def home():
