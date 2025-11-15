@@ -285,6 +285,44 @@ def valid_metric_payload():
         "tags": {"env": "test"},
     }
 
+client = TestClient(app)
+
+
+@patch("src.collector.main.httpx.Client")
+def test_ingest_metric_success(mock_client_cls):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {"saved": True}
+    mock_response.raise_for_status.return_value = None
+    mock_client.post.return_value = mock_response
+
+    payload = valid_metric_payload()
+
+    res = client.post("/ingest/metric", json=payload)
+
+    assert res.status_code == 200
+    assert res.json()["status"] == "ok"
+    assert res.json()["store_response"] == {"saved": True}
+
+    mock_client.post.assert_called_once()
+
+
+@patch("src.collector.main.httpx.Client")
+def test_ingest_metric_store_down(mock_client_cls):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_client.post.side_effect = Exception("boom")
+
+    payload = valid_metric_payload()
+    res = client.post("/ingest/metric", json=payload)
+
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
+
+
 @pytest.mark.parametrize(
     "exc",
     [
@@ -458,6 +496,43 @@ def valid_trace_payload():
         "duration": 67.67,
         "tags": {"status":"ok"},
     }
+
+client = TestClient(app)
+
+
+@patch("src.collector.main.httpx.Client")
+def test_ingest_trace_success(mock_client_cls):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {"saved": True}
+    mock_response.raise_for_status.return_value = None
+    mock_client.post.return_value = mock_response
+
+    payload = valid_trace_payload()
+
+    res = client.post("/ingest/trace", json=payload)
+
+    assert res.status_code == 200
+    assert res.json()["status"] == "ok"
+    assert res.json()["store_response"] == {"saved": True}
+
+    mock_client.post.assert_called_once()
+
+
+@patch("src.collector.main.httpx.Client")
+def test_ingest_trace_store_down(mock_client_cls):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_client.post.side_effect = Exception("boom")
+
+    payload = valid_trace_payload()
+    res = client.post("/ingest/trace", json=payload)
+
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
 
 @pytest.mark.parametrize("payload", TRAZAS_VALIDAS)
 def test_valid_trace_returns_200(payload):
