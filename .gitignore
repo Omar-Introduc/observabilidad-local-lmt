@@ -10,3 +10,7 @@ env/
 venv/
 .pytest_cache/
 /bin/
+src/viewer/.pytest_cache
+src/collector/.pytest_cache
+src/viewer/.pytest_cache
+src/viewer/.pytest_cache
