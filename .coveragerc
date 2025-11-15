@@ -1,2 +1,5 @@
 [run]
 omit =
+    src/demo_service_1/*
+    src/demo_service_2/*
+    src/adapter/*
