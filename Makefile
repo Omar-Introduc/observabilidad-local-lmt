@@ -62,7 +62,7 @@ test: setup
 # INFRAESTRUCTURA DE TERRAFORM
 
 validate-iac: install-iac-tools
-	(cd infra/terraform/stacks/observability && terraform init && terraform validate && tflint --recursive && tfsec .)
+	(cd infra/terraform/stacks/observability && terraform init -upgrade && terraform validate && tflint --recursive && tfsec .)
 
 plan: validate-iac
 	(cd infra/terraform/stacks/observability && terraform plan)
