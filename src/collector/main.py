@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from src.contracts.events import LogEvent, MetricEvent, TraceEvent
 import os
 import logging
@@ -49,7 +49,7 @@ def ingest_metric(event: MetricEvent):
     except Exception as e:
         logger.exception("Error inesperado al reenviar métrica al store: %s", e)
 
-    return {"status": "ok"}
+    raise HTTPException(status_code=503, detail="Service Unavailable")
 
 
 @app.post("/ingest/log")
@@ -78,7 +78,7 @@ def ingest_log(event: LogEvent):
     except Exception as e:
         logger.exception("Error inesperado al reenviar log al store: %s", e)
 
-    return {"status": "ok"}
+    raise HTTPException(status_code=503, detail="Service Unavailable")
 
 
 @app.post("/ingest/trace")
@@ -107,4 +107,4 @@ def ingest_trace(event: TraceEvent):
     except Exception as e:
         logger.exception("Error inesperado al reenviar trace al store: %s", e)
 
-    return {"status": "ok"}
+    raise HTTPException(status_code=503, detail="Service Unavailable")

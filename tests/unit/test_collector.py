@@ -95,7 +95,16 @@ LOGS_VALIDOS = [
 
 
 @pytest.mark.parametrize("payload", LOGS_VALIDOS)
-def test_valid_log_returns_200(payload):
+@patch("src.collector.main.httpx.Client")
+def test_valid_log_returns_200(mock_client_cls, payload):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {"saved": True}
+    mock_response.raise_for_status.return_value = None
+    mock_client.post.return_value = mock_response
+
     response = client.post("/ingest/log", json=payload)
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
@@ -164,8 +173,8 @@ def test_ingest_log_store_down(mock_client_cls):
     payload = valid_log_payload()
     res = client.post("/ingest/log", json=payload)
 
-    assert res.status_code == 200
-    assert res.json() == {"status": "ok"}
+    assert res.status_code == 503
+    assert res.json() == {"detail": "Service Unavailable"}
 
 
 METRICAS_INVALIDAS = [
@@ -242,7 +251,16 @@ METRICAS_VALIDAS = [
 
 
 @pytest.mark.parametrize("payload", METRICAS_VALIDAS)
-def test_valid_metric_returns_200(payload):
+@patch("src.collector.main.httpx.Client")
+def test_valid_metric_returns_200(mock_client_cls, payload):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {"saved": True}
+    mock_response.raise_for_status.return_value = None
+    mock_client.post.return_value = mock_response
+
     response = client.post("/ingest/metric", json=payload)
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
@@ -272,8 +290,8 @@ def test_ingest_log_parametrized_errors(mock_client_cls, exc):
     payload = valid_log_payload()
     res = client.post("/ingest/log", json=payload)
 
-    assert res.status_code == 200
-    assert res.json() == {"status": "ok"}
+    assert res.status_code == 503
+    assert res.json() == {"detail": "Service Unavailable"}
 
 
 def valid_metric_payload():
@@ -321,8 +339,8 @@ def test_ingest_metric_store_down(mock_client_cls):
     payload = valid_metric_payload()
     res = client.post("/ingest/metric", json=payload)
 
-    assert res.status_code == 200
-    assert res.json() == {"status": "ok"}
+    assert res.status_code == 503
+    assert res.json() == {"detail": "Service Unavailable"}
 
 
 @pytest.mark.parametrize(
@@ -343,8 +361,8 @@ def test_ingest_metric_parametrized_errors(mock_client_cls, exc):
     payload = valid_metric_payload()
     res = client.post("/ingest/metric", json=payload)
 
-    assert res.status_code == 200
-    assert res.json() == {"status": "ok"}
+    assert res.status_code == 503
+    assert res.json() == {"detail": "Service Unavailable"}
 
 
 # ------------------------
@@ -536,12 +554,21 @@ def test_ingest_trace_store_down(mock_client_cls):
     payload = valid_trace_payload()
     res = client.post("/ingest/trace", json=payload)
 
-    assert res.status_code == 200
-    assert res.json() == {"status": "ok"}
+    assert res.status_code == 503
+    assert res.json() == {"detail": "Service Unavailable"}
 
 
 @pytest.mark.parametrize("payload", TRAZAS_VALIDAS)
-def test_valid_trace_returns_200(payload):
+@patch("src.collector.main.httpx.Client")
+def test_valid_trace_returns_200(mock_client_cls, payload):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {"saved": True}
+    mock_response.raise_for_status.return_value = None
+    mock_client.post.return_value = mock_response
+
     response = client.post("/ingest/trace", json=payload)
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
@@ -571,5 +598,5 @@ def test_ingest_trace_parametrized_errors(mock_client_cls, exc):
     payload = valid_trace_payload()
     res = client.post("/ingest/trace", json=payload)
 
-    assert res.status_code == 200
-    assert res.json() == {"status": "ok"}
+    assert res.status_code == 503
+    assert res.json() == {"detail": "Service Unavailable"}
