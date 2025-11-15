@@ -275,6 +275,7 @@ def test_ingest_log_parametrized_errors(mock_client_cls, exc):
     assert res.status_code == 200
     assert res.json() == {"status": "ok"}
 
+
 def valid_metric_payload():
     return {
         "id": str(uuid4()),
@@ -284,6 +285,7 @@ def valid_metric_payload():
         "value": 1.23,
         "tags": {"env": "test"},
     }
+
 
 client = TestClient(app)
 
@@ -344,7 +346,8 @@ def test_ingest_metric_parametrized_errors(mock_client_cls, exc):
     assert res.status_code == 200
     assert res.json() == {"status": "ok"}
 
-#------------------------
+
+# ------------------------
 
 TRAZAS_INVALIDAS = [
     {},
@@ -354,10 +357,10 @@ TRAZAS_INVALIDAS = [
         "service": "servicio-ejemplo",
         "trace_id": str(uuid4()),
         "span_id": str(uuid4()),
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "ejemplo (id invalida)",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
     {
         "id": str(uuid4()),
@@ -365,10 +368,10 @@ TRAZAS_INVALIDAS = [
         "service": "servicio-ejemplo",
         "trace_id": str(uuid4()),
         "span_id": str(uuid4()),
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "ejemplo (timestamp invalido)",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
     {
         "id": str(uuid4()),
@@ -376,10 +379,10 @@ TRAZAS_INVALIDAS = [
         "service": "",
         "trace_id": str(uuid4()),
         "span_id": str(uuid4()),
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "ejemplo (service vacio)",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
     {
         "id": str(uuid4()),
@@ -387,10 +390,10 @@ TRAZAS_INVALIDAS = [
         "service": "servicio-ejemplo",
         "trace_id": "1111",
         "span_id": str(uuid4()),
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "ejemplo (trace_id invalido)",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
     {
         "id": str(uuid4()),
@@ -398,10 +401,10 @@ TRAZAS_INVALIDAS = [
         "service": "servicio-ejemplo",
         "trace_id": str(uuid4()),
         "span_id": "111111",
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "ejemplo (span_id invalido)",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
     {
         "id": str(uuid4()),
@@ -409,10 +412,10 @@ TRAZAS_INVALIDAS = [
         "service": "servicio-ejemplo",
         "trace_id": str(uuid4()),
         "span_id": str(uuid4()),
-        "parent_span_id": "111111", #opcional
+        "parent_span_id": "111111",  # opcional
         "name": "ejemplo (parent_span_id invalido)",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
     {
         "id": str(uuid4()),
@@ -420,10 +423,10 @@ TRAZAS_INVALIDAS = [
         "service": "servicio-ejemplo",
         "trace_id": str(uuid4()),
         "span_id": str(uuid4()),
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
     {
         "id": str(uuid4()),
@@ -431,10 +434,10 @@ TRAZAS_INVALIDAS = [
         "service": "servicio-ejemplo",
         "trace_id": str(uuid4()),
         "span_id": str(uuid4()),
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "ejemplo (duration invalido)",
         "duration": -67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
     {
         "id": str(uuid4()),
@@ -442,7 +445,7 @@ TRAZAS_INVALIDAS = [
         "service": "servicio-ejemplo",
         "trace_id": str(uuid4()),
         "span_id": str(uuid4()),
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "ejemplo (tag invalida)",
         "duration": 67.67,
         "tags": "ok",
@@ -452,10 +455,10 @@ TRAZAS_INVALIDAS = [
         "service": "servicio-ejemplo",
         "trace_id": str(uuid4()),
         "span_id": str(uuid4()),
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "ejemplo (campo faltante)",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
 ]
 
@@ -467,10 +470,10 @@ TRAZAS_VALIDAS = [
         "service": "servicio-ejemplo",
         "trace_id": str(uuid4()),
         "span_id": str(uuid4()),
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "ejemplo",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
     {
         "id": str(uuid4()),
@@ -480,9 +483,10 @@ TRAZAS_VALIDAS = [
         "span_id": str(uuid4()),
         "name": "ejemplo (sin parent_span_id)",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     },
 ]
+
 
 def valid_trace_payload():
     return {
@@ -491,11 +495,12 @@ def valid_trace_payload():
         "service": "servicio-ejemplo",
         "trace_id": str(uuid4()),
         "span_id": str(uuid4()),
-        "parent_span_id": str(uuid4()), #opcional
+        "parent_span_id": str(uuid4()),  # opcional
         "name": "ejemplo",
         "duration": 67.67,
-        "tags": {"status":"ok"},
+        "tags": {"status": "ok"},
     }
+
 
 client = TestClient(app)
 
@@ -533,6 +538,7 @@ def test_ingest_trace_store_down(mock_client_cls):
 
     assert res.status_code == 200
     assert res.json() == {"status": "ok"}
+
 
 @pytest.mark.parametrize("payload", TRAZAS_VALIDAS)
 def test_valid_trace_returns_200(payload):
