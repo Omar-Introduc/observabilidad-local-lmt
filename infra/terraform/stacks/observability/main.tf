@@ -21,3 +21,8 @@ module "store"{
     source = "../../modules/store"
     providers = { docker = docker }
 }
+
+module "viewer"{
+    source = "../../modules/viewer"
+    providers = { docker = docker }
+}
