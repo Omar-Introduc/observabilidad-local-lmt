@@ -62,6 +62,15 @@ jobs:
       - name: Ejecutar pruebas (Pytest)
         run: make test
 
+      - name: Generar reporte JSON
+        run: coverage json -o report.json
+
+      - name: Subir artefacto de reporte
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: report.json
+
   validate-iac:
     name: Validar Infraestructura (Terraform)
     runs-on: ubuntu-latest
