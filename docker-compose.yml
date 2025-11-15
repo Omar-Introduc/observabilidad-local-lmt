@@ -26,5 +26,25 @@ services:
     volumes:
       - ./src:/app/src
       - store_data:/app/data
+  demo_service_1:
+    build:
+      context: .
+      dockerfile: src/demo_service_1/dockerfile
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - collector
+  demo_service_2:
+    build:
+      context: .
+      dockerfile: src/demo_service_2/dockerfile
+    ports:
+      - "8004:8000"
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - collector
 volumes:
   store_data:
