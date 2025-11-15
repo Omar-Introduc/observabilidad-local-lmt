@@ -14,3 +14,9 @@ src/viewer/.pytest_cache
 src/collector/.pytest_cache
 src/viewer/.pytest_cache
 src/viewer/.pytest_cache
+.terraform/
+
+terraform.tfstate
+terraform.tfstate.backup
+
+.terraform.lock.hcl
