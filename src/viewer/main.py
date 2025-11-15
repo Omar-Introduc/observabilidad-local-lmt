@@ -66,6 +66,7 @@ def get_logs():
     logs = list(logs)
     return {"count": len(logs), "logs": logs}
 
+
 def read_metrics():
     if not DB_PATH.exists():
         return []
@@ -73,7 +74,7 @@ def read_metrics():
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        
+
         """
         CREATE TABLE IF NOT EXISTS metrics (
             id TEXT PRIMARY KEY,
@@ -85,9 +86,7 @@ def read_metrics():
         )
         """
 
-        cursor.execute(
-            "SELECT id, timestamp, service, name, value, tags FROM metrics"
-        )
+        cursor.execute("SELECT id, timestamp, service, name, value, tags FROM metrics")
         raw_metrics = cursor.fetchall()
 
         conn.close()
@@ -119,6 +118,7 @@ def get_metrics():
     metrics = list(metrics)
     return {"count": len(metrics), "metrics": metrics}
 
+
 def read_traces():
     if not DB_PATH.exists():
         return []
@@ -126,7 +126,7 @@ def read_traces():
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        
+
         """
         id: UUID
         timestamp: datetime
@@ -140,7 +140,9 @@ def read_traces():
         """
 
         cursor.execute(
-            "SELECT id, timestamp, service, trace_id, span_id, parent_span_id, name, duration, tags FROM traces"
+            "SELECT id, timestamp, service, trace_id, span_id, "
+            "parent_span_id, name, duration, tags "
+            "FROM traces"
         )
         raw_traces = cursor.fetchall()
 

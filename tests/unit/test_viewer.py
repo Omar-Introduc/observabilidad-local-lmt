@@ -98,7 +98,9 @@ def test_read_logs_success(tmp_path, monkeypatch):
     assert logs[0]["id"] == "123"
     assert logs[0]["details"] == {"a": "b"}
 
-#---metrics
+
+# ---metrics
+
 
 def test_get_metrics_ok():
     fake_metrics = [
@@ -112,7 +114,9 @@ def test_get_metrics_ok():
         }
     ]
 
-    with patch("src.viewer.main.read_metrics", autospec=True, return_value=fake_metrics):
+    with patch(
+        "src.viewer.main.read_metrics", autospec=True, return_value=fake_metrics
+    ):
         response = client.get("/metrics")
 
         assert response.status_code == 200
@@ -127,9 +131,12 @@ def test_get_metrics_ok():
     ],
 )
 def test_get_metrics_edge_cases(fake_metrics):
-    with patch("src.viewer.main.read_metrics", autospec=True, return_value=fake_metrics):
+    with patch(
+        "src.viewer.main.read_metrics", autospec=True, return_value=fake_metrics
+    ):
         response = client.get("/metrics")
         assert response.status_code == 200
+
 
 def test_read_metrics_returns_empty_if_db_not_exists(tmp_path, monkeypatch):
     fake_db = tmp_path / "no_db.db"
@@ -182,7 +189,9 @@ def test_read_metrics_success(tmp_path, monkeypatch):
     assert metrics[0]["id"] == "123"
     assert metrics[0]["tags"] == {"a": "b"}
 
-#---traces
+
+# ---traces
+
 
 def test_get_traces_ok():
     fake_traces = [
@@ -217,6 +226,7 @@ def test_get_traces_edge_cases(fake_traces):
     with patch("src.viewer.main.read_traces", autospec=True, return_value=fake_traces):
         response = client.get("/traces")
         assert response.status_code == 200
+
 
 def test_read_traces_returns_empty_if_db_not_exists(tmp_path, monkeypatch):
     fake_db = tmp_path / "no_db.db"
