@@ -82,7 +82,7 @@ def ingest_log(event: LogEvent):
 
 
 @app.post("/ingest/trace")
-def ingest_log(event: TraceEvent):
+def ingest_trace(event: TraceEvent):
     """
     Recibe un TraceEvent, valida automáticamente el esquema usando Pydantic
     """
