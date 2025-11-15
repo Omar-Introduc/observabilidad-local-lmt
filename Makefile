@@ -33,9 +33,6 @@ setup:
 	. .venv/bin/activate && pip install -r requirements.txt && pip install -r requirements-dev.txt
 
 tools: install-iac-tools
-	
-build: setup
-	. .venv/bin/activate && python3 -m build --wheel
 
 run:
 	. .venv/bin/activate && uvicorn src.collector.main:app --host 0.0.0.0 --port 8000
