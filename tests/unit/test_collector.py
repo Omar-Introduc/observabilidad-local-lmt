@@ -274,3 +274,302 @@ def test_ingest_log_parametrized_errors(mock_client_cls, exc):
 
     assert res.status_code == 200
     assert res.json() == {"status": "ok"}
+
+
+def valid_metric_payload():
+    return {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "api",
+        "name": "metric.g",
+        "value": 1.23,
+        "tags": {"env": "test"},
+    }
+
+
+client = TestClient(app)
+
+
+@patch("src.collector.main.httpx.Client")
+def test_ingest_metric_success(mock_client_cls):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {"saved": True}
+    mock_response.raise_for_status.return_value = None
+    mock_client.post.return_value = mock_response
+
+    payload = valid_metric_payload()
+
+    res = client.post("/ingest/metric", json=payload)
+
+    assert res.status_code == 200
+    assert res.json()["status"] == "ok"
+    assert res.json()["store_response"] == {"saved": True}
+
+    mock_client.post.assert_called_once()
+
+
+@patch("src.collector.main.httpx.Client")
+def test_ingest_metric_store_down(mock_client_cls):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_client.post.side_effect = Exception("boom")
+
+    payload = valid_metric_payload()
+    res = client.post("/ingest/metric", json=payload)
+
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
+
+
+@pytest.mark.parametrize(
+    "exc",
+    [
+        Exception("network down"),
+        ValueError("bad value"),
+        RuntimeError("unexpected"),
+    ],
+)
+@patch("src.collector.main.httpx.Client")
+def test_ingest_metric_parametrized_errors(mock_client_cls, exc):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_client.post.side_effect = exc
+
+    payload = valid_metric_payload()
+    res = client.post("/ingest/metric", json=payload)
+
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
+
+
+# ------------------------
+
+TRAZAS_INVALIDAS = [
+    {},
+    {
+        "id": "1111111",
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "ejemplo (id invalida)",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": "14/11/25",
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "ejemplo (timestamp invalido)",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "ejemplo (service vacio)",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "servicio-ejemplo",
+        "trace_id": "1111",
+        "span_id": str(uuid4()),
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "ejemplo (trace_id invalido)",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": "111111",
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "ejemplo (span_id invalido)",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "parent_span_id": "111111",  # opcional
+        "name": "ejemplo (parent_span_id invalido)",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "ejemplo (duration invalido)",
+        "duration": -67.67,
+        "tags": {"status": "ok"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "ejemplo (tag invalida)",
+        "duration": 67.67,
+        "tags": "ok",
+    },
+    {
+        "id": str(uuid4()),
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "ejemplo (campo faltante)",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    },
+]
+
+
+TRAZAS_VALIDAS = [
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "ejemplo",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    },
+    {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "name": "ejemplo (sin parent_span_id)",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    },
+]
+
+
+def valid_trace_payload():
+    return {
+        "id": str(uuid4()),
+        "timestamp": Datetime.now(datetime.UTC).isoformat(),
+        "service": "servicio-ejemplo",
+        "trace_id": str(uuid4()),
+        "span_id": str(uuid4()),
+        "parent_span_id": str(uuid4()),  # opcional
+        "name": "ejemplo",
+        "duration": 67.67,
+        "tags": {"status": "ok"},
+    }
+
+
+client = TestClient(app)
+
+
+@patch("src.collector.main.httpx.Client")
+def test_ingest_trace_success(mock_client_cls):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {"saved": True}
+    mock_response.raise_for_status.return_value = None
+    mock_client.post.return_value = mock_response
+
+    payload = valid_trace_payload()
+
+    res = client.post("/ingest/trace", json=payload)
+
+    assert res.status_code == 200
+    assert res.json()["status"] == "ok"
+    assert res.json()["store_response"] == {"saved": True}
+
+    mock_client.post.assert_called_once()
+
+
+@patch("src.collector.main.httpx.Client")
+def test_ingest_trace_store_down(mock_client_cls):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_client.post.side_effect = Exception("boom")
+
+    payload = valid_trace_payload()
+    res = client.post("/ingest/trace", json=payload)
+
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
+
+
+@pytest.mark.parametrize("payload", TRAZAS_VALIDAS)
+def test_valid_trace_returns_200(payload):
+    response = client.post("/ingest/trace", json=payload)
+    assert response.status_code == 200
+    assert response.json()["status"] == "ok"
+
+
+@pytest.mark.parametrize("payload", TRAZAS_INVALIDAS)
+def test_invalid_trace_returns_422(payload):
+    response = client.post("/ingest/trace", json=payload)
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "exc",
+    [
+        Exception("network down"),
+        ValueError("bad value"),
+        RuntimeError("unexpected"),
+    ],
+)
+@patch("src.collector.main.httpx.Client")
+def test_ingest_trace_parametrized_errors(mock_client_cls, exc):
+    mock_client = MagicMock()
+    mock_client_cls.return_value.__enter__.return_value = mock_client
+
+    mock_client.post.side_effect = exc
+
+    payload = valid_trace_payload()
+    res = client.post("/ingest/trace", json=payload)
+
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
